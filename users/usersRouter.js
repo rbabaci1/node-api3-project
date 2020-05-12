@@ -20,8 +20,14 @@ const getUsersHandler = async (req, res) => {
   }
 };
 
-router.post("/", (req, res) => {
-  // do your magic!
+router.post("/", validateUser, async (req, res) => {
+  try {
+    const addedUser = await insert(req.body);
+
+    res.status(201).json(addedUser);
+  } catch (err) {
+    res.status(500).json({ error: "The user could not be added." });
+  }
 });
 
 router.post("/:id/posts", (req, res) => {
@@ -49,9 +55,8 @@ router.put("/:id", (req, res) => {
 //custom middleware
 
 async function validateUserId(req, res, next) {
-  const { id } = req.params;
-
   try {
+    const { id } = req.params;
     const user = await getById(id);
 
     if (user) {
