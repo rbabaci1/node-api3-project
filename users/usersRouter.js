@@ -87,7 +87,15 @@ function validateUser(req, res, next) {
 }
 
 function validatePost(req, res, next) {
-  // do your magic!
+  const body = req.body;
+
+  if (typeof body === undefined) {
+    res.status(400).json({ message: "The post data is missing." });
+  } else if (!body.hasOwnProperty("text")) {
+    res.status(400).json({ message: "The post text is missing." });
+  } else {
+    next();
+  }
 }
 
 module.exports = router;
