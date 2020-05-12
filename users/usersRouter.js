@@ -30,8 +30,8 @@ router.post("/:id/posts", (req, res) => {
 
 router.get("/", getUsersHandler);
 
-router.get("/:id", (req, res) => {
-  // do your magic!
+router.get("/:id", validateUserId, (req, res) => {
+  res.status(200).json(req.user);
 });
 
 router.get("/:id/posts", (req, res) => {
@@ -58,7 +58,9 @@ async function validateUserId(req, res, next) {
       req.user = user;
       next();
     } else {
-      res.status(404).json({ message: "Invalid user id." });
+      res
+        .status(404)
+        .json({ message: "The user with the specified ID does not exist." });
     }
   } catch (err) {
     res.status(500).json({ error: "The user info could not be retrieved." });
