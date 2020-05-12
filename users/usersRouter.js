@@ -26,7 +26,9 @@ router.post("/", validateUser, async (req, res) => {
 
     res.status(201).json(addedUser);
   } catch (err) {
-    res.status(500).json({ error: "The user could not be added." });
+    res
+      .status(500)
+      .json({ error: "The user could not be added at this moment." });
   }
 });
 
@@ -73,9 +75,11 @@ async function validateUserId(req, res, next) {
 }
 
 function validateUser(req, res, next) {
-  if (!req.body || req.body === {}) {
+  const body = req.body;
+
+  if (typeof body === undefined) {
     res.status(400).json({ message: "The user data is missing." });
-  } else if (!"name" in req.body) {
+  } else if (!body.hasOwnProperty("name")) {
     res.status(400).json({ message: "The user name is missing." });
   } else {
     next();
