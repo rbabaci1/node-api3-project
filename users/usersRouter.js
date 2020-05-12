@@ -18,8 +18,9 @@ router.post("/:id/posts", (req, res) => {
   // do your magic!
 });
 
-router.get("/", (req, res) => {
-  // do your magic!
+router.get("/", async (req, res) => {
+  const users = await get();
+  res.status(200).json(users);
 });
 
 router.get("/:id", (req, res) => {
