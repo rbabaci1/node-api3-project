@@ -9,7 +9,9 @@ const getPostsHandler = async (req, res) => {
 
     res.status(200).json(posts);
   } catch (err) {
-    res.status(500).json({ error: "The posts list could not be retrieved." });
+    res
+      .status(500)
+      .json({ error: "The posts list could not be retrieved at this moment." });
   }
 };
 
@@ -46,7 +48,9 @@ async function validatePostId(req, res, next) {
         .json({ message: "The post with the specified ID does not exist." });
     }
   } catch (err) {
-    res.status(500).json({ error: "The post info could not be retrieved." });
+    res
+      .status(500)
+      .json({ error: "The post info could not be retrieved at this moment." });
   }
 }
 

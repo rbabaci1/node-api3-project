@@ -90,7 +90,9 @@ async function validateUserId(req, res, next) {
         .json({ message: "The user with the specified ID does not exist." });
     }
   } catch (err) {
-    res.status(500).json({ error: "The user info could not be retrieved." });
+    res
+      .status(500)
+      .json({ error: "The user info could not be retrieved at this moment." });
   }
 }
 
