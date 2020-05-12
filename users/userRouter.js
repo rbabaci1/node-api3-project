@@ -21,7 +21,7 @@ const getUsersHandler = async (req, res) => {
   }
 };
 
-router.post("/", validateUser, async (req, res) => {
+const postUserHandler = async (req, res) => {
   try {
     const addedUser = await insertUser(req.body);
 
@@ -31,7 +31,9 @@ router.post("/", validateUser, async (req, res) => {
       .status(500)
       .json({ error: "The user could not be added at this moment." });
   }
-});
+};
+
+router.post("/", validateUser, postUserHandler);
 
 router.post("/:id/posts", validatePost, async (req, res) => {
   const { id } = req.params;
