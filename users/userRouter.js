@@ -21,7 +21,7 @@ const getUsersHandler = async (req, res) => {
   }
 };
 
-const postUserHandler = async (req, res) => {
+const postNewUserHandler = async (req, res) => {
   try {
     const addedUser = await insertUser(req.body);
 
@@ -33,9 +33,7 @@ const postUserHandler = async (req, res) => {
   }
 };
 
-router.post("/", validateUser, postUserHandler);
-
-router.post("/:id/posts", validatePost, async (req, res) => {
+const postNewPostHandler = async (req, res) => {
   const { id } = req.params;
   const post = { ...req.body, user_id: id };
 
@@ -56,17 +54,35 @@ router.post("/:id/posts", validatePost, async (req, res) => {
       .status(500)
       .json({ error: "The post could not be added at this moment." });
   }
-});
+};
+
+const getUserByIdHandler = (req, res) => {
+  res.status(200).json(req.user);
+};
+
+const getUserPostsHandler = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const posts = await getUserPosts(id);
+
+    res.status(200).json(posts);
+  } catch (err) {
+    res.status(500).json({
+      message: "The user posts could not be retrieved at this moment.",
+    });
+  }
+};
+
+router.post("/", [validateUser, postNewUserHandler]);
+
+router.post("/:id/posts", [validatePost, postNewPostHandler]);
 
 router.get("/", getUsersHandler);
 
-router.get("/:id", validateUserId, (req, res) => {
-  res.status(200).json(req.user);
-});
+router.get("/:id", [validateUserId, getUserByIdHandler]);
 
-router.get("/:id/posts", (req, res) => {
-  // do your magic!
-});
+router.get("/:id/posts", [validateUserId, getUserPostsHandler]);
 
 router.delete("/:id", (req, res) => {
   // do your magic!
@@ -79,8 +95,9 @@ router.put("/:id", (req, res) => {
 //custom middleware
 
 async function validateUserId(req, res, next) {
+  const { id } = req.params;
+
   try {
-    const { id } = req.params;
     const user = await getById(id);
 
     if (user) {
