@@ -38,9 +38,17 @@ router.post("/:id/posts", validatePost, async (req, res) => {
   const post = { ...req.body, user_id: id };
 
   try {
-    const addedPost = await insertPost(post);
+    const user = await getById(id);
 
-    res.status(201).json(addedPost);
+    if (!user) {
+      res
+        .status(404)
+        .json({ message: "The user with the specified ID does not exist." });
+    } else {
+      const addedPost = await insertPost(post);
+
+      res.status(201).json(addedPost);
+    }
   } catch (err) {
     res
       .status(500)
