@@ -1,20 +1,29 @@
-const express = require('express');
+const express = require("express");
+const { get, getById, insert, update, remove } = require("./postDb");
 
 const router = express.Router();
 
-router.get('/', (req, res) => {
+const getPostsHandler = async (req, res) => {
+  try {
+    const posts = await get();
+
+    res.status(200).json(posts);
+  } catch (err) {
+    res.status(500).json({ error: "The posts list could not be retrieved." });
+  }
+};
+
+router.get("/", getPostsHandler);
+
+router.get("/:id", (req, res) => {
   // do your magic!
 });
 
-router.get('/:id', (req, res) => {
+router.delete("/:id", (req, res) => {
   // do your magic!
 });
 
-router.delete('/:id', (req, res) => {
-  // do your magic!
-});
-
-router.put('/:id', (req, res) => {
+router.put("/:id", (req, res) => {
   // do your magic!
 });
 
