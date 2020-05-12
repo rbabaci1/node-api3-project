@@ -1,4 +1,6 @@
 const express = require("express");
+const helmet = require("helmet");
+
 const userRouter = require("./users/userRouter");
 const postRouter = require("./posts/postRouter");
 
@@ -6,6 +8,7 @@ const server = express();
 
 server.use(express.json());
 // server.use(logger);
+server.use(helmet());
 
 server.use("/api/users", userRouter);
 server.use("/api/posts", postRouter);
@@ -28,6 +31,7 @@ function logger(req, res, next) {
 
 function errorHandler(error, req, res, next) {
   console.log(error.statusCode);
+  res.status(400).json("Hello there");
 }
 
 server.use(errorHandler);
