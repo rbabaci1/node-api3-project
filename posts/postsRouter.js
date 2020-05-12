@@ -13,11 +13,13 @@ const getPostsHandler = async (req, res) => {
   }
 };
 
+const getPostByIdHandler = async (req, res) => {
+  res.status(200).json(req.post);
+};
+
 router.get("/", getPostsHandler);
 
-router.get("/:id", (req, res) => {
-  // do your magic!
-});
+router.get("/:id", [validatePostId, getPostByIdHandler]);
 
 router.delete("/:id", (req, res) => {
   // do your magic!
