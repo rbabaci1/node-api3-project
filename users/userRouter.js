@@ -119,9 +119,10 @@ async function validateUserId(req, res, next) {
       req.user = user;
       next();
     } else {
-      res
-        .status(404)
-        .json({ message: "The user with the specified ID does not exist." });
+      next(new Error("User does not exists!"));
+      // res
+      //   .status(404)
+      //   .json({ message: "The user with the specified ID does not exist." });
     }
   } catch (err) {
     res

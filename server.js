@@ -5,7 +5,7 @@ const postRouter = require("./posts/postRouter");
 const server = express();
 
 server.use(express.json());
-server.use(logger);
+// server.use(logger);
 
 server.use("/api/users", userRouter);
 server.use("/api/posts", postRouter);
@@ -26,8 +26,10 @@ function logger(req, res, next) {
   next();
 }
 
-function handleError(error, req, res, next) {}
+function errorHandler(error, req, res, next) {
+  console.log(error.statusCode);
+}
 
-server.use(handleError);
+server.use(errorHandler);
 
 module.exports = server;
