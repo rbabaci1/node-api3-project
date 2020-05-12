@@ -74,6 +74,21 @@ const getUserPostsHandler = async (req, res) => {
   }
 };
 
+const deleteUserHandler = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const userToRemove = await getById(id);
+    await remove(id);
+
+    res.status(200).json({ removedUser: userToRemove });
+  } catch (err) {
+    res
+      .status(500)
+      .json({ message: "The user could not be deleted at this moment." });
+  }
+};
+
 router.post("/", [validateUser, postNewUserHandler]);
 
 router.post("/:id/posts", [validatePost, postNewPostHandler]);
@@ -84,9 +99,7 @@ router.get("/:id", [validateUserId, getUserByIdHandler]);
 
 router.get("/:id/posts", [validateUserId, getUserPostsHandler]);
 
-router.delete("/:id", (req, res) => {
-  // do your magic!
-});
+router.delete("/:id", [validateUserId, deleteUserHandler]);
 
 router.put("/:id", (req, res) => {
   // do your magic!
