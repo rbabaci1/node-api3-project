@@ -101,21 +101,14 @@ const putUserHandler = async (req, res) => {
 };
 
 router.post("/", [validateUser, createUserHandler]);
-
 router.post("/:id/posts", [validateUserId, validatePost, createPostHandler]);
-
 router.get("/", getUsersHandler);
-
 router.get("/:id", [validateUserId, getUserByIdHandler]);
-
 router.get("/:id/posts", [validateUserId, getUserPostsHandler]);
-
 router.delete("/:id", [validateUserId, deleteUserHandler]);
-
 router.put("/:id", [validateUserId, validateUser, putUserHandler]);
 
 //custom middleware
-
 async function validateUserId(req, res, next) {
   const { id } = req.params;
 

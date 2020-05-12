@@ -26,4 +26,8 @@ function logger(req, res, next) {
   next();
 }
 
+function handleError(error, req, res, next) {}
+
+server.use(handleError);
+
 module.exports = server;
