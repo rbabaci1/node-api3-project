@@ -10,6 +10,16 @@ const {
 
 const router = express.Router();
 
+const getUsersHandler = async (req, res) => {
+  try {
+    const users = await get();
+
+    res.status(200).json(users);
+  } catch (err) {
+    res.status(500).json({ error: "The users list could not be retrieved." });
+  }
+};
+
 router.post("/", (req, res) => {
   // do your magic!
 });
@@ -18,10 +28,7 @@ router.post("/:id/posts", (req, res) => {
   // do your magic!
 });
 
-router.get("/", async (req, res) => {
-  const users = await get();
-  res.status(200).json(users);
-});
+router.get("/", getUsersHandler);
 
 router.get("/:id", (req, res) => {
   // do your magic!
