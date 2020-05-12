@@ -3,10 +3,11 @@ const {
   get,
   getById,
   getUserPosts,
-  insert,
+  insert: insertUser,
   update,
   remove,
 } = require("./userDb");
+const { insert: insertPost } = require("../posts/postDb");
 
 const router = express.Router();
 
@@ -22,7 +23,7 @@ const getUsersHandler = async (req, res) => {
 
 router.post("/", validateUser, async (req, res) => {
   try {
-    const addedUser = await insert(req.body);
+    const addedUser = await insertUser(req.body);
 
     res.status(201).json(addedUser);
   } catch (err) {
@@ -32,8 +33,19 @@ router.post("/", validateUser, async (req, res) => {
   }
 });
 
-router.post("/:id/posts", (req, res) => {
-  // do your magic!
+router.post("/:id/posts", validatePost, async (req, res) => {
+  const { id } = req.params;
+  const post = { ...req.body, user_id: id };
+
+  try {
+    const addedPost = await insertPost(post);
+
+    res.status(201).json(addedPost);
+  } catch (err) {
+    res
+      .status(500)
+      .json({ error: "The post could not be added at this moment." });
+  }
 });
 
 router.get("/", getUsersHandler);
