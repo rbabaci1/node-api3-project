@@ -21,7 +21,7 @@ const getUsersHandler = async (req, res) => {
   }
 };
 
-const postNewUserHandler = async (req, res) => {
+const createUserHandler = async (req, res) => {
   try {
     const addedUser = await insertUser(req.body);
 
@@ -33,22 +33,14 @@ const postNewUserHandler = async (req, res) => {
   }
 };
 
-const postNewPostHandler = async (req, res) => {
+const createPostHandler = async (req, res) => {
   const { id } = req.params;
   const post = { ...req.body, user_id: id };
 
   try {
-    const user = await getById(id);
+    const addedPost = await insertPost(post);
 
-    if (!user) {
-      res
-        .status(404)
-        .json({ message: "The user with the specified ID does not exist." });
-    } else {
-      const addedPost = await insertPost(post);
-
-      res.status(201).json(addedPost);
-    }
+    res.status(201).json(addedPost);
   } catch (err) {
     res
       .status(500)
@@ -81,17 +73,36 @@ const deleteUserHandler = async (req, res) => {
     const userToRemove = await getById(id);
     await remove(id);
 
-    res.status(200).json({ removedUser: userToRemove });
+    res.status(200).json({ removed_user: userToRemove });
   } catch (err) {
     res
       .status(500)
-      .json({ message: "The user could not be deleted at this moment." });
+      .json({ message: "The user could not be removed at this moment." });
   }
 };
 
-router.post("/", [validateUser, postNewUserHandler]);
+const putUserHandler = async (req, res) => {
+  const { id } = req.params;
+  const prevUser = req.user;
+  const updatedUser = { id: Number(id), ...req.body };
 
-router.post("/:id/posts", [validatePost, postNewPostHandler]);
+  try {
+    await update(id, updatedUser);
+
+    res.status(200).json({
+      previous_user: prevUser,
+      updated_user: updatedUser,
+    });
+  } catch (err) {
+    res
+      .status(500)
+      .json({ message: "The user could not be updated at this moment." });
+  }
+};
+
+router.post("/", [validateUser, createUserHandler]);
+
+router.post("/:id/posts", [validateUserId, validatePost, createPostHandler]);
 
 router.get("/", getUsersHandler);
 
@@ -101,9 +112,7 @@ router.get("/:id/posts", [validateUserId, getUserPostsHandler]);
 
 router.delete("/:id", [validateUserId, deleteUserHandler]);
 
-router.put("/:id", (req, res) => {
-  // do your magic!
-});
+router.put("/:id", [validateUserId, validateUser, putUserHandler]);
 
 //custom middleware
 
