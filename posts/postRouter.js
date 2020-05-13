@@ -5,6 +5,11 @@ const { validateId, validateBody } = require("../validations/index");
 const router = express.Router();
 
 /******************     Custom Middleware     ******************/
+const namePost = (req, res, next) => {
+  req.name = "post";
+  next();
+};
+
 const getPostsHandler = async (req, res) => {
   try {
     const posts = await get();
@@ -54,14 +59,13 @@ const putPostHandler = async (req, res, next) => {
     });
   }
 };
-
 /********************************************************************/
 
 router.get("/", getPostsHandler);
-router.get("/:id", validateId, getPostByIdHandler);
+router.get("/:id", namePost, validateId, getPostByIdHandler);
 
-router.delete("/:id", validateId, removePostHandler);
+router.delete("/:id", namePost, validateId, removePostHandler);
 
-router.put("/:id", validateId, validateBody, putPostHandler);
+router.put("/:id", namePost, validateId, validateBody, putPostHandler);
 
 module.exports = router;

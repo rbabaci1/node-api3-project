@@ -2,9 +2,8 @@ const { getById: getUserById } = require("../users/userDb");
 const { getById: getPostById } = require("../posts/postDb");
 
 async function validateId(req, res, next) {
-  const name = req.baseUrl === "/api/users" ? "user" : "post";
-
   try {
+    const { name } = req;
     const { id } = req.params;
     const item =
       name === "user" ? await getUserById(id) : await getPostById(id);
@@ -28,8 +27,7 @@ async function validateId(req, res, next) {
 }
 
 function validateBody(req, res, next) {
-  const name = req.originalUrl === "/api/users" ? "user" : "post";
-  const body = req.body;
+  const { body, name } = req;
 
   if (typeof body === undefined) {
     res.status(400).json({ message: `The ${name} info is missing.` });

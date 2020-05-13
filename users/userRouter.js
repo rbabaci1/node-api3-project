@@ -14,6 +14,11 @@ const { validateId, validateBody } = require("../validations/index");
 const router = express.Router();
 
 /******************     Custom Middleware     ******************/
+const nameUser = (req, res, next) => {
+  req.name = "user";
+  next();
+};
+
 const getUsersHandler = async (req, res, next) => {
   try {
     const users = await get();
@@ -22,6 +27,24 @@ const getUsersHandler = async (req, res, next) => {
   } catch (err) {
     next({
       message: "The users list could not be retrieved at this moment.",
+      reason: err.message,
+    });
+  }
+};
+
+const getUserByIdHandler = (req, res) => {
+  res.status(200).json(req.item);
+};
+
+const getUserPostsHandler = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const posts = await getUserPosts(id);
+
+    res.status(200).json(posts);
+  } catch (err) {
+    next({
+      message: "The user posts could not be retrieved at this moment.",
       reason: err.message,
     });
   }
@@ -50,24 +73,6 @@ const createPostHandler = async (req, res, next) => {
   } catch (err) {
     next({
       message: "The post could not be added at this moment.",
-      reason: err.message,
-    });
-  }
-};
-
-const getUserByIdHandler = (req, res) => {
-  res.status(200).json(req.item);
-};
-
-const getUserPostsHandler = async (req, res, next) => {
-  try {
-    const { id } = req.params;
-    const posts = await getUserPosts(id);
-
-    res.status(200).json(posts);
-  } catch (err) {
-    next({
-      message: "The user posts could not be retrieved at this moment.",
       reason: err.message,
     });
   }
@@ -106,17 +111,24 @@ const putUserHandler = async (req, res, next) => {
     });
   }
 };
+
 /********************************************************************/
 
 router.get("/", getUsersHandler);
-router.get("/:id", validateId, getUserByIdHandler);
-router.get("/:id/posts", validateId, getUserPostsHandler);
+router.get("/:id", nameUser, validateId, getUserByIdHandler);
+router.get("/:id/posts", nameUser, validateId, getUserPostsHandler);
 
-router.post("/", validateBody, createUserHandler);
-router.post("/:id/posts", validateId, validateBody, createPostHandler);
+router.post("/", nameUser, validateBody, createUserHandler);
+router.post(
+  "/:id/posts",
+  nameUser,
+  validateId,
+  validateBody,
+  createPostHandler
+);
 
-router.delete("/:id", validateId, deleteUserHandler);
+router.delete("/:id", nameUser, validateId, deleteUserHandler);
 
-router.put("/:id", validateId, validateBody, putUserHandler);
+router.put("/:id", nameUser, validateId, validateBody, putUserHandler);
 
 module.exports = router;
