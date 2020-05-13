@@ -23,7 +23,7 @@ const getPostsHandler = async (req, res) => {
 };
 
 const getPostByIdHandler = async (req, res) => {
-  res.status(200).json(req.item);
+  res.status(200).json(req.post);
 };
 
 const removePostHandler = async (req, res, next) => {
@@ -44,7 +44,7 @@ const removePostHandler = async (req, res, next) => {
 const putPostHandler = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const prevPost = req.item;
+    const prevPost = req.post;
     const updatedPost = { id: Number(id), ...req.body };
 
     await update(id, updatedPost);

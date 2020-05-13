@@ -3,13 +3,16 @@ const { getById: getPostById } = require("../posts/postDb");
 
 async function validateId(req, res, next) {
   try {
-    const { name } = req;
-    const { id } = req.params;
+    const {
+      name,
+      params: { id },
+    } = req;
+
     const item =
       name === "user" ? await getUserById(id) : await getPostById(id);
 
     if (item) {
-      req.item = item;
+      req[name] = item;
       next();
     } else {
       next({

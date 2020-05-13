@@ -33,7 +33,7 @@ const getUsersHandler = async (req, res, next) => {
 };
 
 const getUserByIdHandler = (req, res) => {
-  res.status(200).json(req.item);
+  res.status(200).json(req.user);
 };
 
 const getUserPostsHandler = async (req, res, next) => {
@@ -96,7 +96,7 @@ const deleteUserHandler = async (req, res, next) => {
 const putUserHandler = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const prevUser = req.item;
+    const prevUser = req.user;
     const updatedUser = { id: Number(id), ...req.body };
 
     await update(id, updatedUser);
