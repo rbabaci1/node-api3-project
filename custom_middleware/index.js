@@ -138,9 +138,11 @@ function validateBody(req, res, next) {
   const { body } = req;
 
   if (typeof body === undefined) {
-    res.status(400).json({ message: `Some info in the body is missing.` });
+    res.status(400).json({ message: `Request body is missing.` });
   } else if (!body.hasOwnProperty("name") && !body.hasOwnProperty("text")) {
-    res.status(400).json({ message: `Some info in the body is missing.` });
+    res.status(400).json({
+      message: `Some info in the body is missing or not correctly defined.`,
+    });
   } else {
     next();
   }
