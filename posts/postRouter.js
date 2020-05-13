@@ -1,5 +1,6 @@
 const express = require("express");
-const { get, getById, insert, update, remove } = require("./postDb");
+const { get, getById, update, remove } = require("./postDb");
+const { validatePostId, validatePost } = require("../validations/index");
 
 const router = express.Router();
 
@@ -20,33 +21,7 @@ const getPostByIdHandler = async (req, res) => {
   res.status(200).json(req.post);
 };
 
-// custom middleware
-
-async function validatePostId(req, res, next) {
-  try {
-    const { id } = req.params;
-    const post = await getById(id);
-
-    if (post) {
-      req.post = post;
-      next();
-    } else {
-      res
-        .status(404)
-        .json({ message: "The post with the specified ID does not exist." });
-    }
-  } catch (err) {
-    res
-      .status(500)
-      .json({ error: "The post info could not be retrieved at this moment." });
-  }
-}
-/********************************************************************/
-
-router.get("/", getPostsHandler);
-router.get("/:id", validatePostId, getPostByIdHandler);
-
-router.delete("/:id", validatePostId, async (req, res, next) => {
+const removePostHandler = async (req, res, next) => {
   try {
     const { id } = req.params;
     const postToRemove = await getById(id);
@@ -59,10 +34,34 @@ router.delete("/:id", validatePostId, async (req, res, next) => {
       reason: err.message,
     });
   }
-});
+};
 
-router.put("/:id", (req, res) => {
-  // do your magic!
-});
+const putPostHandler = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const prevPost = req.post;
+    const updatedPost = { id: Number(id), ...req.body };
+
+    await update(id, updatedPost);
+    res.status(200).json({
+      previous_post: prevPost,
+      updated_post: updatedPost,
+    });
+  } catch (err) {
+    next({
+      message: "The post could not be updated at this moment.",
+      reason: err.message,
+    });
+  }
+};
+
+/********************************************************************/
+
+router.get("/", getPostsHandler);
+router.get("/:id", validatePostId, getPostByIdHandler);
+
+router.delete("/:id", validatePostId, removePostHandler);
+
+router.put("/:id", validatePostId, validatePost, putPostHandler);
 
 module.exports = router;

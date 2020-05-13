@@ -1,4 +1,6 @@
 const express = require("express");
+
+const { insert: insertPost } = require("../posts/postDb");
 const {
   get,
   getById,
@@ -7,7 +9,11 @@ const {
   update,
   remove,
 } = require("./userDb");
-const { insert: insertPost } = require("../posts/postDb");
+const {
+  validateUserId,
+  validateUser,
+  validatePost,
+} = require("../validations/index");
 
 const router = express.Router();
 
@@ -104,53 +110,6 @@ const putUserHandler = async (req, res, next) => {
     });
   }
 };
-
-async function validateUserId(req, res, next) {
-  try {
-    const { id } = req.params;
-    const user = await getById(id);
-
-    if (user) {
-      req.user = user;
-      next();
-    } else {
-      next({
-        status: 404,
-        message: "The user with the specified ID does not exist.",
-      });
-    }
-  } catch (err) {
-    next({
-      status: 500,
-      error: "The user info could not be retrieved at this moment.",
-      reason: err.message,
-    });
-  }
-}
-
-function validateUser(req, res, next) {
-  const body = req.body;
-
-  if (typeof body === undefined) {
-    res.status(400).json({ message: "The user data is missing." });
-  } else if (!body.hasOwnProperty("name")) {
-    res.status(400).json({ message: "The user name is missing." });
-  } else {
-    next();
-  }
-}
-
-function validatePost(req, res, next) {
-  const body = req.body;
-
-  if (typeof body === undefined) {
-    res.status(400).json({ message: "The post data is missing." });
-  } else if (!body.hasOwnProperty("text")) {
-    res.status(400).json({ message: "The post text is missing." });
-  } else {
-    next();
-  }
-}
 /********************************************************************/
 
 router.get("/", getUsersHandler);
