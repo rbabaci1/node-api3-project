@@ -7,7 +7,7 @@ const postRouter = require("./posts/postRouter");
 const server = express();
 
 server.use(express.json());
-// server.use(logger);
+server.use(logger);
 server.use(helmet());
 
 server.use("/api/users", userRouter);
@@ -30,7 +30,7 @@ function logger(req, res, next) {
 }
 
 function errorHandler(error, req, res, next) {
-  const code = error.status || 500;
+  const code = error.status || error.statusCode || 500;
 
   res.status(code).json(error);
 }
