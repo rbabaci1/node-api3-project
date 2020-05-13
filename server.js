@@ -30,8 +30,9 @@ function logger(req, res, next) {
 }
 
 function errorHandler(error, req, res, next) {
-  console.log(error.statusCode);
-  res.status(400).json("Hello there");
+  const code = error.status || 500;
+
+  res.status(code).json(error);
 }
 
 server.use(errorHandler);

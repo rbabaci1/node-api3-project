@@ -11,29 +11,33 @@ const { insert: insertPost } = require("../posts/postDb");
 
 const router = express.Router();
 
-const getUsersHandler = async (req, res) => {
+const getUsersHandler = async (req, res, next) => {
   try {
     const users = await get();
 
     res.status(200).json(users);
   } catch (err) {
-    res.status(500).json({ error: "The users list could not be retrieved." });
+    next({
+      message: "The users list could not be retrieved at this moment.",
+      reason: err.message,
+    });
   }
 };
 
-const createUserHandler = async (req, res) => {
+const createUserHandler = async (req, res, next) => {
   try {
     const addedUser = await insertUser(req.body);
 
     res.status(201).json(addedUser);
   } catch (err) {
-    res
-      .status(500)
-      .json({ error: "The user could not be added at this moment." });
+    next({
+      message: "The user could not be added at this moment.",
+      reason: err.message,
+    });
   }
 };
 
-const createPostHandler = async (req, res) => {
+const createPostHandler = async (req, res, next) => {
   const { id } = req.params;
   const post = { ...req.body, user_id: id };
 
@@ -42,9 +46,10 @@ const createPostHandler = async (req, res) => {
 
     res.status(201).json(addedPost);
   } catch (err) {
-    res
-      .status(500)
-      .json({ error: "The post could not be added at this moment." });
+    next({
+      message: "The post could not be added at this moment.",
+      reason: err.message,
+    });
   }
 };
 
@@ -52,7 +57,7 @@ const getUserByIdHandler = (req, res) => {
   res.status(200).json(req.user);
 };
 
-const getUserPostsHandler = async (req, res) => {
+const getUserPostsHandler = async (req, res, next) => {
   const { id } = req.params;
 
   try {
@@ -60,13 +65,14 @@ const getUserPostsHandler = async (req, res) => {
 
     res.status(200).json(posts);
   } catch (err) {
-    res.status(500).json({
+    next({
       message: "The user posts could not be retrieved at this moment.",
+      reason: err.message,
     });
   }
 };
 
-const deleteUserHandler = async (req, res) => {
+const deleteUserHandler = async (req, res, next) => {
   const { id } = req.params;
 
   try {
@@ -75,13 +81,14 @@ const deleteUserHandler = async (req, res) => {
 
     res.status(200).json({ removed_user: userToRemove });
   } catch (err) {
-    res
-      .status(500)
-      .json({ message: "The user could not be removed at this moment." });
+    next({
+      message: "The user could not be removed at this moment.",
+      reason: err.message,
+    });
   }
 };
 
-const putUserHandler = async (req, res) => {
+const putUserHandler = async (req, res, next) => {
   const { id } = req.params;
   const prevUser = req.user;
   const updatedUser = { id: Number(id), ...req.body };
@@ -94,9 +101,10 @@ const putUserHandler = async (req, res) => {
       updated_user: updatedUser,
     });
   } catch (err) {
-    res
-      .status(500)
-      .json({ message: "The user could not be updated at this moment." });
+    next({
+      message: "The user could not be updated at this moment.",
+      reason: err.message,
+    });
   }
 };
 
@@ -119,15 +127,17 @@ async function validateUserId(req, res, next) {
       req.user = user;
       next();
     } else {
-      next(new Error("User does not exists!"));
-      // res
-      //   .status(404)
-      //   .json({ message: "The user with the specified ID does not exist." });
+      next({
+        status: 404,
+        message: "The user with the specified ID does not exist.",
+      });
     }
   } catch (err) {
-    res
-      .status(500)
-      .json({ error: "The user info could not be retrieved at this moment." });
+    next({
+      status: 500,
+      error: "The user info could not be retrieved at this moment.",
+      reason: err.message,
+    });
   }
 }
 
