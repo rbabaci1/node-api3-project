@@ -9,7 +9,7 @@ const {
   update,
   remove,
 } = require("./userDb");
-const { validateId, validateBody } = require("../validations/index");
+const { validateId, validateBody } = require("../validations");
 
 const router = express.Router();
 

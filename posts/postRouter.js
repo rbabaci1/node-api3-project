@@ -1,6 +1,6 @@
 const express = require("express");
 const { get, getById, update, remove } = require("./postDb");
-const { validateId, validateBody } = require("../validations/index");
+const { validateId, validateBody } = require("../validations");
 
 const router = express.Router();
 
