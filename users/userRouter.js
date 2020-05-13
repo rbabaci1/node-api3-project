@@ -9,11 +9,7 @@ const {
   update,
   remove,
 } = require("./userDb");
-const {
-  validateUserId,
-  validateUser,
-  validatePost,
-} = require("../validations/index");
+const { validateId, validateBody } = require("../validations/index");
 
 const router = express.Router();
 
@@ -60,7 +56,7 @@ const createPostHandler = async (req, res, next) => {
 };
 
 const getUserByIdHandler = (req, res) => {
-  res.status(200).json(req.user);
+  res.status(200).json(req.item);
 };
 
 const getUserPostsHandler = async (req, res, next) => {
@@ -95,7 +91,7 @@ const deleteUserHandler = async (req, res, next) => {
 const putUserHandler = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const prevUser = req.user;
+    const prevUser = req.item;
     const updatedUser = { id: Number(id), ...req.body };
 
     await update(id, updatedUser);
@@ -113,14 +109,14 @@ const putUserHandler = async (req, res, next) => {
 /********************************************************************/
 
 router.get("/", getUsersHandler);
-router.get("/:id", validateUserId, getUserByIdHandler);
-router.get("/:id/posts", validateUserId, getUserPostsHandler);
+router.get("/:id", validateId, getUserByIdHandler);
+router.get("/:id/posts", validateId, getUserPostsHandler);
 
-router.post("/", validateUser, createUserHandler);
-router.post("/:id/posts", validateUserId, validatePost, createPostHandler);
+router.post("/", validateBody, createUserHandler);
+router.post("/:id/posts", validateId, validateBody, createPostHandler);
 
-router.delete("/:id", validateUserId, deleteUserHandler);
+router.delete("/:id", validateId, deleteUserHandler);
 
-router.put("/:id", validateUserId, validateUser, putUserHandler);
+router.put("/:id", validateId, validateBody, putUserHandler);
 
 module.exports = router;

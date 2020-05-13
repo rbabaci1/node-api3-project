@@ -1,6 +1,6 @@
 const express = require("express");
 const { get, getById, update, remove } = require("./postDb");
-const { validatePostId, validatePost } = require("../validations/index");
+const { validateId, validateBody } = require("../validations/index");
 
 const router = express.Router();
 
@@ -18,7 +18,7 @@ const getPostsHandler = async (req, res) => {
 };
 
 const getPostByIdHandler = async (req, res) => {
-  res.status(200).json(req.post);
+  res.status(200).json(req.item);
 };
 
 const removePostHandler = async (req, res, next) => {
@@ -39,7 +39,7 @@ const removePostHandler = async (req, res, next) => {
 const putPostHandler = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const prevPost = req.post;
+    const prevPost = req.item;
     const updatedPost = { id: Number(id), ...req.body };
 
     await update(id, updatedPost);
@@ -58,10 +58,10 @@ const putPostHandler = async (req, res, next) => {
 /********************************************************************/
 
 router.get("/", getPostsHandler);
-router.get("/:id", validatePostId, getPostByIdHandler);
+router.get("/:id", validateId, getPostByIdHandler);
 
-router.delete("/:id", validatePostId, removePostHandler);
+router.delete("/:id", validateId, removePostHandler);
 
-router.put("/:id", validatePostId, validatePost, putPostHandler);
+router.put("/:id", validateId, validateBody, putPostHandler);
 
 module.exports = router;
