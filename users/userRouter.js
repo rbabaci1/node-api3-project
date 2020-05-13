@@ -11,6 +11,7 @@ const { insert: insertPost } = require("../posts/postDb");
 
 const router = express.Router();
 
+/******************     Custom Middleware     ******************/
 const getUsersHandler = async (req, res, next) => {
   try {
     const users = await get();
@@ -108,15 +109,6 @@ const putUserHandler = async (req, res, next) => {
   }
 };
 
-router.post("/", [validateUser, createUserHandler]);
-router.post("/:id/posts", [validateUserId, validatePost, createPostHandler]);
-router.get("/", getUsersHandler);
-router.get("/:id", [validateUserId, getUserByIdHandler]);
-router.get("/:id/posts", [validateUserId, getUserPostsHandler]);
-router.delete("/:id", [validateUserId, deleteUserHandler]);
-router.put("/:id", [validateUserId, validateUser, putUserHandler]);
-
-//custom middleware
 async function validateUserId(req, res, next) {
   const { id } = req.params;
 
@@ -164,5 +156,14 @@ function validatePost(req, res, next) {
     next();
   }
 }
+/********************************************************************/
+
+router.post("/", [validateUser, createUserHandler]);
+router.post("/:id/posts", [validateUserId, validatePost, createPostHandler]);
+router.get("/", getUsersHandler);
+router.get("/:id", [validateUserId, getUserByIdHandler]);
+router.get("/:id/posts", [validateUserId, getUserPostsHandler]);
+router.delete("/:id", [validateUserId, deleteUserHandler]);
+router.put("/:id", [validateUserId, validateUser, putUserHandler]);
 
 module.exports = router;
