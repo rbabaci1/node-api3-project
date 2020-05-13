@@ -39,10 +39,9 @@ const createUserHandler = async (req, res, next) => {
 };
 
 const createPostHandler = async (req, res, next) => {
-  const { id } = req.params;
-  const post = { ...req.body, user_id: id };
-
   try {
+    const { id } = req.params;
+    const post = { ...req.body, user_id: id };
     const addedPost = await insertPost(post);
 
     res.status(201).json(addedPost);
@@ -59,9 +58,8 @@ const getUserByIdHandler = (req, res) => {
 };
 
 const getUserPostsHandler = async (req, res, next) => {
-  const { id } = req.params;
-
   try {
+    const { id } = req.params;
     const posts = await getUserPosts(id);
 
     res.status(200).json(posts);
@@ -74,12 +72,11 @@ const getUserPostsHandler = async (req, res, next) => {
 };
 
 const deleteUserHandler = async (req, res, next) => {
-  const { id } = req.params;
-
   try {
+    const { id } = req.params;
     const userToRemove = await getById(id);
-    await remove(id);
 
+    await remove(id);
     res.status(200).json({ removed_user: userToRemove });
   } catch (err) {
     next({
@@ -90,13 +87,12 @@ const deleteUserHandler = async (req, res, next) => {
 };
 
 const putUserHandler = async (req, res, next) => {
-  const { id } = req.params;
-  const prevUser = req.user;
-  const updatedUser = { id: Number(id), ...req.body };
-
   try {
-    await update(id, updatedUser);
+    const { id } = req.params;
+    const prevUser = req.user;
+    const updatedUser = { id: Number(id), ...req.body };
 
+    await update(id, updatedUser);
     res.status(200).json({
       previous_user: prevUser,
       updated_user: updatedUser,
@@ -110,9 +106,8 @@ const putUserHandler = async (req, res, next) => {
 };
 
 async function validateUserId(req, res, next) {
-  const { id } = req.params;
-
   try {
+    const { id } = req.params;
     const user = await getById(id);
 
     if (user) {
@@ -158,12 +153,15 @@ function validatePost(req, res, next) {
 }
 /********************************************************************/
 
-router.post("/", [validateUser, createUserHandler]);
-router.post("/:id/posts", [validateUserId, validatePost, createPostHandler]);
 router.get("/", getUsersHandler);
-router.get("/:id", [validateUserId, getUserByIdHandler]);
-router.get("/:id/posts", [validateUserId, getUserPostsHandler]);
-router.delete("/:id", [validateUserId, deleteUserHandler]);
-router.put("/:id", [validateUserId, validateUser, putUserHandler]);
+router.get("/:id", validateUserId, getUserByIdHandler);
+router.get("/:id/posts", validateUserId, getUserPostsHandler);
+
+router.post("/", validateUser, createUserHandler);
+router.post("/:id/posts", validateUserId, validatePost, createPostHandler);
+
+router.delete("/:id", validateUserId, deleteUserHandler);
+
+router.put("/:id", validateUserId, validateUser, putUserHandler);
 
 module.exports = router;
